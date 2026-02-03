@@ -1,0 +1,14 @@
+{
+    "name": "podintel-server",
+    "version": "1.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "node index.js"
+    },
+    "dependencies": {
+        "express": "^4.18.2",
+        "cors": "^2.8.5",
+        "cheerio": "^1.0.0-rc.12",
+        "@anthropic-ai/sdk": "^0.24.0"
+    }
+}
