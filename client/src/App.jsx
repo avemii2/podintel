@@ -1441,38 +1441,67 @@ function App() {
     const [profile, setProfile] = useState({})
     const [isLoaded, setIsLoaded] = useState(false)
 
-    // Load from localStorage on mount
+    // Load settings from server first, fallback to localStorage
     useEffect(() => {
-        const savedSubs = localStorage.getItem('podintel_subscriptions')
-        const savedProfile = localStorage.getItem('podintel_profile')
-        if (savedSubs) {
+        async function loadSettings() {
+            // Try to load from server first
             try {
-                setSubscriptions(JSON.parse(savedSubs))
-            } catch (e) {
-                console.error('Failed to parse subscriptions:', e)
+                const serverSettings = await api.get('/settings')
+                if (serverSettings && Object.keys(serverSettings).length > 0) {
+                    // Server has settings
+                    if (serverSettings.subscriptions) {
+                        setSubscriptions(serverSettings.subscriptions)
+                    }
+                    if (serverSettings.profile) {
+                        setProfile(serverSettings.profile)
+                    }
+                    setIsLoaded(true)
+                    return
+                }
+            } catch (err) {
+                console.log('Server settings not available, using localStorage')
             }
-        }
-        if (savedProfile) {
-            try {
-                setProfile(JSON.parse(savedProfile))
-            } catch (e) {
-                console.error('Failed to parse profile:', e)
+
+            // Fallback to localStorage
+            const savedSubs = localStorage.getItem('podintel_subscriptions')
+            const savedProfile = localStorage.getItem('podintel_profile')
+            if (savedSubs) {
+                try {
+                    setSubscriptions(JSON.parse(savedSubs))
+                } catch (e) {
+                    console.error('Failed to parse subscriptions:', e)
+                }
             }
+            if (savedProfile) {
+                try {
+                    setProfile(JSON.parse(savedProfile))
+                } catch (e) {
+                    console.error('Failed to parse profile:', e)
+                }
+            }
+            setIsLoaded(true)
         }
-        // Mark as loaded after restoring state
-        setIsLoaded(true)
+        loadSettings()
     }, [])
 
-    // Persist to localStorage - only after initial load
+    // Persist to both localStorage and server
     useEffect(() => {
         if (isLoaded) {
             localStorage.setItem('podintel_subscriptions', JSON.stringify(subscriptions))
+            // Save to server (fire and forget)
+            api.post('/settings', { subscriptions, profile }).catch(err => {
+                console.log('Failed to save settings to server:', err)
+            })
         }
     }, [subscriptions, isLoaded])
 
     useEffect(() => {
         if (isLoaded) {
             localStorage.setItem('podintel_profile', JSON.stringify(profile))
+            // Save to server (fire and forget)
+            api.post('/settings', { subscriptions, profile }).catch(err => {
+                console.log('Failed to save settings to server:', err)
+            })
         }
     }, [profile, isLoaded])
 

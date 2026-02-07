@@ -362,5 +362,53 @@ router.post('/podcasts/import-rss', async (req, res) => {
     }
 })
 
+/**
+ * Settings file path
+ */
+import { fileURLToPath } from 'url'
+import { dirname, join } from 'path'
+import { promises as fs } from 'fs'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+const SETTINGS_FILE = join(__dirname, '..', 'data', 'settings.json')
+
+/**
+ * GET /api/settings
+ * Load user settings from file
+ */
+router.get('/settings', async (req, res) => {
+    try {
+        const data = await fs.readFile(SETTINGS_FILE, 'utf-8')
+        const settings = JSON.parse(data)
+        res.json(settings)
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            // No settings file yet, return empty
+            res.json({})
+        } else {
+            console.error('Settings load error:', err)
+            res.status(500).json({ error: 'Failed to load settings' })
+        }
+    }
+})
+
+/**
+ * POST /api/settings
+ * Save user settings to file
+ */
+router.post('/settings', async (req, res) => {
+    const settings = req.body
+
+    try {
+        await fs.writeFile(SETTINGS_FILE, JSON.stringify(settings, null, 2))
+        res.json({ success: true })
+    } catch (err) {
+        console.error('Settings save error:', err)
+        res.status(500).json({ error: 'Failed to save settings' })
+    }
+})
+
 export default router
+
 
