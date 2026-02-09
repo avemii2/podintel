@@ -352,31 +352,61 @@ function Dashboard() {
             <div className="page container">
                 <div className="hero">
                     <h1>Welcome to PodIntel</h1>
-                    <p>AI-powered podcast intelligence with personalized summaries tailored to your writing style.</p>
-                    <Link to="/settings" className="btn btn-primary btn-lg">
-                        🔑 Set Up API Key to Get Started
-                    </Link>
+                    <p>Turn the podcasts you already listen to into personalized content ideas, summaries, and insights — powered by AI and tailored to your writing style.</p>
                 </div>
 
-                <div className="card text-center" style={{ marginTop: '2rem' }}>
-                    <h3>How it works</h3>
-                    <div className="grid grid-3 mt-lg">
-                        <div>
-                            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔍</div>
-                            <h4>Search</h4>
-                            <p>Find any podcast on podscripts.co</p>
+                <div className="card" style={{ marginTop: '2rem', padding: 'var(--space-xl)' }}>
+                    <h3>Getting Started</h3>
+                    <p style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-lg)' }}>
+                        Follow these steps to start turning your favorite podcasts into actionable insights.
+                    </p>
+
+                    <div className="welcome-steps">
+                        <div className="welcome-step">
+                            <div className="welcome-step-number">1</div>
+                            <div className="welcome-step-content">
+                                <h4>Set up your API key</h4>
+                                <p>PodIntel uses Claude AI to analyze transcripts and generate summaries. You'll need an API key from Anthropic to get started.</p>
+                                <Link to="/settings" className="btn btn-primary btn-sm" style={{ marginTop: 'var(--space-sm)' }}>
+                                    Go to Settings
+                                </Link>
+                            </div>
                         </div>
-                        <div>
-                            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📝</div>
-                            <h4>Transcripts</h4>
-                            <p>Read full timestamped transcripts</p>
+
+                        <div className="welcome-step">
+                            <div className="welcome-step-number">2</div>
+                            <div className="welcome-step-content">
+                                <h4>Find your podcasts</h4>
+                                <p>Search for the podcasts you already listen to. Type in a name — like "Huberman Lab" or "Modern Wisdom" — and we'll look them up on <strong>Podscript</strong> (podscripts.co), which hosts transcripts for thousands of popular shows.</p>
+                                <Link to="/search" className="btn btn-secondary btn-sm" style={{ marginTop: 'var(--space-sm)' }}>
+                                    Search Podcasts
+                                </Link>
+                            </div>
                         </div>
-                        <div>
-                            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🤖</div>
-                            <h4>AI Summaries</h4>
-                            <p>Get personalized insights via Claude</p>
+
+                        <div className="welcome-step">
+                            <div className="welcome-step-number">3</div>
+                            <div className="welcome-step-content">
+                                <h4>Check transcript availability</h4>
+                                <p>Not every podcast has transcripts on Podscript. When you search, we'll check whether transcripts are available. If they are, you're good to go — subscribe and start exploring episodes. If not, the podcast isn't supported yet, but you can check back as new shows are added regularly.</p>
+                            </div>
+                        </div>
+
+                        <div className="welcome-step">
+                            <div className="welcome-step-number">4</div>
+                            <div className="welcome-step-content">
+                                <h4>Get AI-powered summaries</h4>
+                                <p>Open any episode, and PodIntel will pull the transcript from Podscript. Hit "Generate AI Summary" to get key takeaways, quotable moments, and content ideas matched to your writing style.</p>
+                            </div>
                         </div>
                     </div>
+                </div>
+
+                <div className="card" style={{ marginTop: 'var(--space-lg)', padding: 'var(--space-xl)', background: 'rgba(124, 58, 237, 0.05)', borderLeft: '4px solid var(--accent-primary)' }}>
+                    <h4>About Podscript</h4>
+                    <p style={{ color: 'var(--text-secondary)' }}>
+                        PodIntel pulls transcripts from <strong>podscripts.co</strong>, a community-driven site that hosts timestamped transcripts for popular podcasts. If your podcast is listed there, we can fetch the full transcript for any episode. If it's not listed, transcripts won't be available — but Podscript's catalog is growing, so it's worth checking again later.
+                    </p>
                 </div>
             </div>
         )
