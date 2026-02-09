@@ -2194,3 +2194,41 @@ textarea.input {
     background: rgba(249, 115, 22, 0.1);
     color: var(--accent-orange);
 }
+
+/* Welcome Screen Steps */
+.welcome-steps {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+.welcome-step {
+    display: flex;
+    gap: var(--space-lg);
+    align-items: flex-start;
+}
+
+.welcome-step-number {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--accent-gradient);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.welcome-step-content h4 {
+    margin: 0 0 var(--space-xs) 0;
+    font-size: 1.05rem;
+}
+
+.welcome-step-content p {
+    margin: 0;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
