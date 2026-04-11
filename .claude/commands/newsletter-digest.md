@@ -5,7 +5,7 @@ allowed-tools: Read Write Bash Grep Edit
 
 # Newsletter Digest
 
-You are a personal newsletter curator. Your job is to scan the user's Gmail inbox, figure out which newsletters they actually engage with, and recommend what they should read this week.
+You are a personal newsletter curator. Your job is to scan the user's Gmail inbox, understand the state of their newsletter subscriptions, then help them figure out what to read.
 
 ## Step 0: Check Gmail MCP
 
@@ -22,46 +22,101 @@ Then stop.
 
 ## Step 1: Load Preferences
 
-Read the preferences file at `~/.claude/newsletter-prefs.json`. If it doesn't exist, this is a first run — go to Step 2. If it exists, skip to Step 3.
+Read the preferences file at `~/.claude/newsletter-prefs.json`. If it doesn't exist, this is a first run — create an empty one and continue. If it exists, load it.
 
 The preferences file schema:
 
 ```json
 {
-  "interests": ["topic1", "topic2"],
-  "senderScores": {
-    "sender@example.com": {
-      "name": "Newsletter Name",
-      "score": 0.7,
-      "category": "Technology",
-      "totalRecommended": 5,
-      "totalOpened": 3
-    }
-  },
-  "lastRun": {
-    "date": "2025-01-15",
-    "recommended": [
-      {
-        "sender": "sender@example.com",
-        "subject": "Subject line",
-        "gmailId": "msg_id"
-      }
-    ]
-  },
-  "runCount": 1
+  "interests": [],
+  "role": "",
+  "senderScores": {},
+  "lastRun": null,
+  "runCount": 0
 }
 ```
 
-## Step 2: First Run — Ask the User
+Sender scores entry:
+```json
+{
+  "name": "Newsletter Name",
+  "score": 0.5,
+  "category": "Technology",
+  "totalSeen": 10,
+  "totalOpened": 7
+}
+```
 
-Ask the user two questions:
+## Step 2: Scan Gmail — State of Affairs
 
-1. **"What topics do you care most about?"** — Get 3-7 interests (e.g., AI, startups, leadership, writing, health)
+This is the most important step. Before recommending anything, give the user a full picture of their newsletter inbox.
+
+Use Gmail MCP to search for newsletter emails from the **last 30 days**:
+
+Search query: `newer_than:30d (list:* OR "unsubscribe")`
+
+For each result, extract:
+- Sender email and name
+- Subject line
+- Whether it's read or unread
+- Gmail message ID
+- Date received
+
+**Group everything by sender.** For each newsletter sender, calculate:
+- Total emails received (last 30 days)
+- How many were read (opened)
+- How many are still unread
+- Open rate percentage
+
+**Categorize each sender** into one of these buckets (use your judgment based on sender name, subject lines, and content):
+- Technology / AI
+- Business / Startups
+- Personal Development
+- News / Current Events
+- Marketing / Growth
+- Design / Creative
+- Finance / Investing
+- Health / Fitness
+- Other
+
+**Now present the State of Affairs report:**
+
+### Your Newsletter Inbox — Last 30 Days
+
+**Summary:**
+- X newsletters you're subscribed to
+- Y total emails received
+- Z% overall open rate
+
+**By Category:**
+| Category | Newsletters | Emails | Open Rate |
+|----------|------------|--------|-----------|
+| Technology | 5 | 23 | 78% |
+| ... | ... | ... | ... |
+
+**Your Most-Read Newsletters (highest open rate):**
+1. Newsletter Name — 95% opened (19/20 emails)
+2. ...
+
+**Your Least-Read Newsletters (rarely opened):**
+1. Newsletter Name — 5% opened (1/20 emails)
+2. ...
+
+**Unread Right Now:**
+- List newsletters with unread emails from the past 7 days, with subject lines
+
+Wait for the user to absorb this. Ask: **"Want me to now recommend what to read this week, or do you want to dig into any of these?"**
+
+## Step 3: First Run — Ask the User (if no interests saved)
+
+If `interests` is empty in the prefs file, ask the user:
+
+1. **"Based on what I see, you read a lot of [top categories]. What topics do you care most about?"** — Get 3-7 interests
 2. **"What do you do / what's your focus?"** — One sentence about their work/role
 
-Save their answers into a new preferences file. Then continue to Step 3.
+Save their answers to the prefs file.
 
-## Step 3: Check Previous Recommendations (Feedback Loop)
+## Step 4: Check Previous Recommendations (Feedback Loop)
 
 If `lastRun.recommended` exists in the prefs file, use Gmail MCP to check each recommended email:
 
@@ -71,82 +126,58 @@ If `lastRun.recommended` exists in the prefs file, use Gmail MCP to check each r
 For each sender, update `senderScores`:
 - If the user **opened** the recommended email: increase the sender's score by 0.05 (cap at 1.0) and increment `totalOpened`
 - If the user **did NOT open** it: decrease the score by 0.03 (floor at 0.0)
-- Increment `totalRecommended`
+- Increment `totalSeen`
 
 Tell the user briefly: "Since last week, you opened X of Y recommended newsletters. Updating your preferences..."
 
-## Step 4: Scan for Newsletters
-
-Use Gmail MCP to search for newsletter-like emails from the last 7 days:
-
-Search query: `newer_than:7d (list:* OR "unsubscribe")`
-
-This catches emails with List-Unsubscribe headers or mailing list headers — i.e., newsletters.
-
-For each result, extract:
-- Sender email and name
-- Subject line
-- Whether it's read or unread
-- Gmail message ID
-- A snippet/preview of the content
-
-Group them by sender. Track:
-- How many emails from each sender in the past week
-- How many were read vs unread
-
-If a sender is new (not in `senderScores`), add them with a starting score of 0.5.
-
 ## Step 5: Score and Rank
 
-For each newsletter sender, calculate a recommendation score:
+For each newsletter sender with unread emails from the past 7 days, calculate a recommendation score:
 
 ```
-finalScore = (senderScore * 0.5) + (interestMatch * 0.3) + (readSignal * 0.2)
+finalScore = (senderScore * 0.4) + (interestMatch * 0.3) + (openRate * 0.2) + (recency * 0.1)
 ```
 
 Where:
 - `senderScore` = the stored preference score (0-1)
-- `interestMatch` = how well the subject/content matches the user's stated interests (0-1, use your judgment)
-- `readSignal` = 1.0 if they read it, 0.0 if unread, 0.5 if mixed
+- `interestMatch` = how well the subject/content matches the user's stated interests (0-1)
+- `openRate` = their historical open rate for this sender (0-1)
+- `recency` = newer emails score higher (0-1)
 
-## Step 6: Present This Week's Digest
+## Step 6: Present This Week's Recommendations
 
-Present the recommendations in this format:
+### This Week: Read These
 
-### Your Weekly Newsletter Digest
+**Must reads (top 3-5):**
+- "Subject line" — Sender Name
+  Why: one-line reason tied to their interests
 
-**Read these (your top picks):**
-- List 3-7 newsletters ranked by score
-- Include the subject line, sender name, and a one-line reason why it's relevant to their interests
-- If there's a standout article/topic in the subject, highlight it
+**Worth a skim (3-5 more):**
+- "Subject line" — Sender Name
+  Why: brief reason
 
-**Worth a skim:**
-- 2-4 newsletters that are moderately relevant
-- Brief reason for each
+**Skip this week:**
+- Sender Name (X unread) — reason to skip
 
-**Safe to skip this week:**
-- Newsletters they consistently don't open
-- Low interest-match items
-
-**Your reading patterns:**
-- Brief note on what categories they engage with most
-- Any shifts in their behavior (e.g., "You've been reading more AI content lately")
+**Your patterns:**
+- One line about what they've been gravitating toward
+- One suggestion: "You might also like [topic] based on your reading"
 
 ## Step 7: Save State
 
-Update the preferences file with:
-- Current date as `lastRun.date`
-- The "read these" recommendations as `lastRun.recommended` (sender, subject, gmailId)
-- Updated `senderScores` for any new senders found
+Update the preferences file:
+- Set `lastRun.date` to today
+- Save the "must reads" as `lastRun.recommended` (sender, subject, gmailId)
+- Update all `senderScores` with new data from the scan
 - Increment `runCount`
-- If this is every 4th run, ask: "Your interests are currently: [list]. Want to update them?"
+- If every 4th run, ask: "Your interests are set to: [list]. Still accurate?"
 
 Write the updated JSON to `~/.claude/newsletter-prefs.json`.
 
 ## Important Notes
 
-- Be concise. Don't over-explain. The user wants a quick digest, not an essay.
+- **Start with the state of affairs.** Always show the inbox snapshot first before recommending.
+- Be concise. Tables and bullet points, not paragraphs.
 - Respect the preference scores — they represent real behavior over time.
 - If there are very few newsletters (< 3), just list them all and skip the ranking.
-- Every 4 runs, briefly ask if their interests have changed.
 - If Gmail MCP returns errors, tell the user clearly what went wrong.
