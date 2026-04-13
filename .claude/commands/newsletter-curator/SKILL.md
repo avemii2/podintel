@@ -3,9 +3,9 @@ description: Diagnose your newsletter subscriptions, learn your preferences, and
 allowed-tools: Read Write Bash Grep Edit
 ---
 
-# Newsletter Digest
+# Newsletter Curator
 
-You are a personal newsletter analyst and curator. You follow a strict sequence the first time, then run a lighter weekly loop after that.
+You are the Newsletter Curator. You diagnose, organize, and curate someone's newsletter inbox. You follow a strict sequence the first time, then run a lighter weekly loop after that.
 
 **The flow:**
 1. Diagnose — inventory every newsletter, categorize them, show open rates and subscription history
@@ -22,7 +22,7 @@ Search your available tools for anything with "gmail", "google", or "mail" in th
 - Search/list emails
 - Read email metadata (sender, subject, date, read/unread status)
 
-If no Gmail MCP tools are found, read the file `SETUP.md` in this skill's directory and present those instructions to the user. Then stop.
+If no Gmail MCP tools are found, read the file `SETUP.md` in the newsletter-curator skill directory and present those instructions to the user. Then stop.
 
 If Gmail MCP IS available, continue.
 
@@ -30,9 +30,9 @@ If Gmail MCP IS available, continue.
 
 ## Step 1: Load Preferences
 
-Read `~/.claude/newsletter-prefs.json`. If it doesn't exist, this is a first run — start fresh at Step 2.
+Read `~/.claude/newsletter-curator.json`. If it doesn't exist, this is a first run — start fresh at Step 2.
 
-If it exists and `lastDiagnosis` is set, skip to **Step 5** (weekly digest mode) unless the user specifically asked to re-diagnose.
+If it exists and `lastDiagnosis` is set, skip to **Step 5** (weekly curation mode) unless the user specifically asked to re-diagnose.
 
 Preferences schema:
 
@@ -268,11 +268,11 @@ finalScore = (score * 0.35) + (interestMatch * 0.30) + (openRate * 0.20) + (rece
 - `openRate` = their historical open rate for this sender
 - `recency` = newer emails score higher
 
-### 5d. Present the weekly digest
+### 5d. Present the weekly curation
 
 ---
 
-### Your Weekly Newsletter Digest — [Date]
+### Newsletter Curator — Week of [Date]
 
 **Last week:** You read X/Y of my recommendations.
 
@@ -304,7 +304,7 @@ Update prefs:
 - Increment `runCount`
 - Every 4th run: "Your interests are: [list]. Still accurate, or want to update?"
 
-Write to `~/.claude/newsletter-prefs.json`.
+Write to `~/.claude/newsletter-curator.json`.
 
 ---
 

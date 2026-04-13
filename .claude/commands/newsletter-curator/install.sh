@@ -1,13 +1,13 @@
 #!/bin/bash
-# Newsletter Digest Skill Installer
+# Newsletter Curator — Skill Installer
 # Copies the skill into your Claude Code commands directory
 
 set -e
 
-SKILL_DIR="$HOME/.claude/commands/newsletter-digest"
+SKILL_DIR="$HOME/.claude/commands/newsletter-curator"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-echo "Installing Newsletter Digest skill..."
+echo "Installing Newsletter Curator skill..."
 
 # Create target directory
 mkdir -p "$SKILL_DIR"
@@ -20,8 +20,8 @@ echo ""
 echo "Installed to $SKILL_DIR"
 echo ""
 echo "Usage:"
-echo "  /newsletter-digest     — Run diagnosis + recommendations"
-echo "  /loop 7d /newsletter-digest  — Run weekly on autopilot"
+echo "  /newsletter-curator           — Run diagnosis + curation"
+echo "  /loop 7d /newsletter-curator  — Run weekly on autopilot"
 echo ""
 echo "Prerequisites:"
 echo "  You need a Gmail MCP server configured."

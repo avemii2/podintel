@@ -65,7 +65,7 @@ The first time the MCP server runs, it will open a browser for Google OAuth. Sig
 
 ### 5. Verify
 
-Run `/newsletter-digest` — if it can search your emails, you're good.
+Run `/newsletter-curator` — if it can search your emails, you're good.
 
 ## Option 2: IMAP-based MCP
 
@@ -109,5 +109,5 @@ For Gmail with IMAP, you'll need an [App Password](https://myaccount.google.com/
 
 - This skill only needs **read-only** access to Gmail. Never grant write/send permissions.
 - Your OAuth tokens are stored locally by the MCP server.
-- The preferences file (`~/.claude/newsletter-prefs.json`) stays on your machine.
+- The preferences file (`~/.claude/newsletter-curator.json`) stays on your machine.
 - No data is sent anywhere except to Claude for analysis during skill execution.

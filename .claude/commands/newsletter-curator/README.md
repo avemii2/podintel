@@ -1,6 +1,6 @@
-# /newsletter-digest
+# /newsletter-curator
 
-A Claude Code skill that scans your Gmail, inventories all your newsletter subscriptions, and gives you a weekly digest of what's actually worth reading.
+A Claude Code skill that scans your Gmail, inventories all your newsletter subscriptions, and curates what's actually worth reading each week.
 
 ## What It Does
 
@@ -12,11 +12,11 @@ A Claude Code skill that scans your Gmail, inventories all your newsletter subsc
 5. Compares your inbox against your stated interests — shows matches, mismatches, and gaps
 6. Recommends what to keep, drop, and what's missing
 
-**Every run after (weekly digest):**
+**Every run after (weekly curation):**
 1. Checks if you read last week's recommendations (feedback loop)
 2. Scans this week's newsletters
 3. Scores and ranks by your preferences + actual behavior
-4. Gives you a "read these / skim these / skip these" digest
+4. Gives you a "read these / skim these / skip these" curation
 5. Updates your preference scores based on what you actually open over time
 
 ## Install
@@ -24,7 +24,7 @@ A Claude Code skill that scans your Gmail, inventories all your newsletter subsc
 **Option A — In any repo:**
 ```bash
 # Clone or copy this directory into your project
-cp -r newsletter-digest/ .claude/commands/newsletter-digest/
+cp -r newsletter-curator/ .claude/commands/newsletter-curator/
 ```
 
 **Option B — Global install (available everywhere):**
@@ -34,9 +34,9 @@ cp -r newsletter-digest/ .claude/commands/newsletter-digest/
 
 **Option C — Just grab the skill file:**
 ```bash
-mkdir -p ~/.claude/commands/newsletter-digest
-curl -o ~/.claude/commands/newsletter-digest/SKILL.md <raw-url>
-curl -o ~/.claude/commands/newsletter-digest/SETUP.md <raw-url>
+mkdir -p ~/.claude/commands/newsletter-curator
+curl -o ~/.claude/commands/newsletter-curator/SKILL.md <raw-url>
+curl -o ~/.claude/commands/newsletter-curator/SETUP.md <raw-url>
 ```
 
 ## Prerequisites
@@ -48,8 +48,8 @@ See [SETUP.md](SETUP.md) for detailed instructions.
 ## Usage
 
 ```
-/newsletter-digest          # Run the full flow
-/loop 7d /newsletter-digest # Auto-run every 7 days
+/newsletter-curator          # Run the full flow
+/loop 7d /newsletter-curator # Auto-run every 7 days
 ```
 
 ## How It Learns
@@ -57,7 +57,7 @@ See [SETUP.md](SETUP.md) for detailed instructions.
 - **Open rate tracking:** Each run checks which recommended emails you actually opened in Gmail
 - **Score adjustment:** Senders you engage with get higher scores over time, ignored ones decay
 - **Interest matching:** Your stated interests are compared against newsletter content
-- **No external services:** Everything stays local in `~/.claude/newsletter-prefs.json`
+- **No external services:** Everything stays local in `~/.claude/newsletter-curator.json`
 
 ## Files
 
@@ -70,7 +70,7 @@ See [SETUP.md](SETUP.md) for detailed instructions.
 
 ## Data Storage
 
-Preferences are stored at `~/.claude/newsletter-prefs.json`. This file contains:
+Preferences are stored at `~/.claude/newsletter-curator.json`. This file contains:
 - Your stated interests and role
 - Newsletter inventory (names, categories, scores)
 - Engagement history (open rates, recommendation follow-through)
