@@ -11,6 +11,9 @@ build/
 server/data/cache.json
 server/data/summaries.json
 server/data/settings.json
+server/data/newsletters.json
+server/data/user-profile.json
+server/data/digest-history.json
 
 # Environment variables (should not contain secrets for this app, but good practice)
 .env
@@ -40,3 +43,6 @@ pids/
 *.pid
 *.seed
 *.pid.lock
+
+# Newsletter preferences (user-specific, stored in home dir)
+newsletter-prefs.json
