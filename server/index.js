@@ -3,9 +3,7 @@ import cors from 'cors'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 import podcastRoutes from './routes/podcasts.js'
-import newsletterRoutes from './routes/newsletters.js'
 import { initDb } from './services/cache.js'
-import { initNewsletterStore } from './services/newsletterStore.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -16,13 +14,11 @@ const PORT = process.env.PORT || 3001
 app.use(cors())
 app.use(express.json())
 
-// Initialize databases
+// Initialize database
 initDb()
-initNewsletterStore()
 
 // API Routes
 app.use('/api', podcastRoutes)
-app.use('/api', newsletterRoutes)
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -37,5 +33,4 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
     console.log(`🚀 PodIntel server running on http://localhost:${PORT}`)
-    console.log(`📬 Newsletter analyzer ready at /api/newsletters`)
 })
